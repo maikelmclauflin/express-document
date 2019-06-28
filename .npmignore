@@ -1,0 +1,6 @@
+lib/
+examples/
+tests/
+nodemon.json
+jest.config.js
+tsconfig.json
