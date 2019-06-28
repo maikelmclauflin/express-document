@@ -14,7 +14,6 @@ const documenter = expressDocument({
     basePath
   }
 })
-// const { documenter } = documentRoutes
 
 documenter.param('firstname', () => ({
   in: 'path',

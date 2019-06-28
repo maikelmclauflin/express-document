@@ -56,6 +56,10 @@ class Documenter {
     return this.state
   }
 
+  basePath () {
+    return this.state.basePath
+  }
+
   document () {
     const documenter = this
     return function (options: Path = {}) {
@@ -75,7 +79,24 @@ class Documenter {
         [endpoint]: path = {}
       } = paths
       paths[endpoint] = path
-      path[method] = baseRoute(options)
+      const route = baseRoute(options)
+      path[method] = route
+      return {
+        parent: documenter,
+        param: input,
+        query: input,
+        response: (status, options) => {
+          const { responses = {} } = route
+          route.responses = responses
+          responses[status] = normalizeResponse(options)
+          return this
+        }
+      }
+
+      function input (fn) {
+        route.parameters.push(fn)
+        return this
+      }
     }
   }
 }
@@ -120,10 +141,14 @@ function baseRoute ({
     summary,
     description,
     parameters: [].concat(parameters),
-    responses: _.mapValues(responses, (item) => Object.assign({
-      description: 'an example route response description'
-    }, item, item.schema ? {
-      schema: joiToJSONSchema(item.schema)
-    } : {}))
+    responses: _.mapValues(responses, normalizeResponse)
   }
+}
+
+function normalizeResponse (item) {
+  return Object.assign({
+    description: 'an example route response description'
+  }, item, item.schema ? {
+    schema: joiToJSONSchema(item.schema)
+  } : {})
 }
