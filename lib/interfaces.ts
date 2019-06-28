@@ -1,5 +1,6 @@
+import * as express from 'express'
 
-interface DocInfo {
+export interface DocInfo {
   description: string;
   version: string;
   title: string;
@@ -8,28 +9,28 @@ interface DocInfo {
   }
 }
 
-interface Tag {
+export interface Tag {
   name: string;
   description: string;
 }
 
-interface DocumenterOptions {
+export interface DocumenterOptions {
   secure?: boolean;
   basePath?: string;
   info?: DocInfo;
   tags?: Tag[];
 }
 
-interface Response {
-  description: string;
-  schema: any;
+export interface Response {
+  description?: string;
+  schema?: any;
 }
 
-interface Responses {
+export interface Responses {
   [key: string]: Response;
 }
 
-interface Path {
+export interface Route {
   tags?: string[];
   summary?: string;
   description?: string;
@@ -37,26 +38,27 @@ interface Path {
   responses?: Responses;
 }
 
-interface Paths {
+export interface RouteCache {
   [key: string]: {
-    [key: string]: Path;
+    [key: string]: Route;
   };
 }
 
-interface FullState {
+export interface FullState {
   swaggerOptions: object;
   schemes: string[];
   swagger: string;
-  paths: Paths;
+  basePath: string;
+  paths: RouteCache;
   definitions: object;
 }
-interface ParamHash {
+export interface ParamHash {
   [key: string]: () => {
     [key: string]: any;
   };
 }
 
-interface InputOptions {
+export interface InputOptions {
   param?: {
     [key: string]: Function;
   };
@@ -65,9 +67,34 @@ interface InputOptions {
   };
 }
 
-interface ModuleOptions {
+export interface ModuleOptions {
   express?;
   options?: DocumenterOptions;
   swagger?: any;
   inputs?: InputOptions;
+}
+
+export interface RouteInput {
+  (key: string, target: object | Function): RouteSetup;
+}
+
+export interface ResponseInput {
+  (key: number | string, target: object | Function): RouteSetup;
+}
+
+export interface DocumentHandler {
+  (options?: Route): RouteSetup;
+}
+
+export interface Router extends express.Router {
+  document: DocumentHandler;
+}
+
+export interface RouteSetup {
+  route: Route;
+  router: Router;
+  // documenter: object;
+  param: RouteInput;
+  query: RouteInput;
+  response: ResponseInput;
 }

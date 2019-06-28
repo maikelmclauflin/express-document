@@ -1,10 +1,11 @@
 import Documenter from './documenter'
 import swaggerUI from 'swagger-ui-express'
 import globalExpress from 'express'
+import * as interfaces from './interfaces'
 
 export default expressDocumentRoute
 
-function expressDocumentRoute(opts: ModuleOptions = {}) {
+function expressDocumentRoute(opts: interfaces.ModuleOptions = {}) {
   const {
     express = globalExpress,
     options,

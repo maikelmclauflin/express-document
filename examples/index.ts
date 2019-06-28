@@ -3,10 +3,11 @@ import express from 'express'
 import swaggerUI from 'swagger-ui-express'
 import empty from './empty'
 import helloworld from './helloworld'
+import * as interfaces from '../lib/interfaces'
 
 const app = express()
 const docPath = '/documentation/'
-const baseRouter = new express.Router()
+const baseRouter: interfaces.Router = new (express as any).Router()
 
 const basePath = '/api/'
 const documenter = expressDocument({
@@ -42,7 +43,7 @@ app.listen(port, (err) => {
 })
 
 function setup (setupRoute) {
-  const router = new express.Router()
+  const router: interfaces.Router = new (express as any).Router()
   setupRoute({
     router,
     documenter

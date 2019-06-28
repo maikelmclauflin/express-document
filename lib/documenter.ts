@@ -1,6 +1,7 @@
 import _ from 'lodash'
 import joiToJSONSchema from 'joi-to-json-schema'
 import * as defaults from './defaults'
+import * as interfaces from './interfaces'
 import swaggerUI from 'swagger-ui-express'
 
 const responseProperties = ['lastUpdated', 'payload']
@@ -22,14 +23,14 @@ const query = input('query')
 
 class Documenter {
   static baseRoute
-  state: FullState;
-  inputs: InputOptions;
-  param = input('param')
-  query = input('query')
+  state: interfaces.FullState;
+  inputs: interfaces.InputOptions;
+  param = input('param');
+  query = input('query');
 
   constructor (
-    options: DocumenterOptions = {},
-    inputs: InputOptions = {
+    options: interfaces.DocumenterOptions = {},
+    inputs: interfaces.InputOptions = {
       param: {},
       query: {}
     }
@@ -60,14 +61,14 @@ class Documenter {
     return this.state.basePath
   }
 
-  document () {
+  document (): interfaces.DocumentHandler {
     const documenter = this
-    return function (options: Path = {}) {
-      const route = this
+    return function (options?: interfaces.Route): interfaces.RouteSetup {
+      const router = this
       const {
         endpoint,
         method
-      } = parseRoute(route)
+      } = parseRoute(router)
       const {
         state
       } = documenter
@@ -79,14 +80,15 @@ class Documenter {
         [endpoint]: path = {}
       } = paths
       paths[endpoint] = path
-      const route = baseRoute(options)
+      const route = baseRoute(options || {})
       path[method] = route
       return {
-        parent: documenter,
+        route,
+        router,
         param: input,
         query: input,
-        response: (status, options) => {
-          const { responses = {} } = route
+        response: function (status, options) {
+          const { responses } = route
           route.responses = responses
           responses[status] = normalizeResponse(options)
           return this
@@ -135,7 +137,7 @@ function baseRoute ({
   description = 'example description',
   parameters = [],
   responses = {}
-}) : Path {
+}) : interfaces.Route {
   return {
     tags: [].concat(tags),
     summary,

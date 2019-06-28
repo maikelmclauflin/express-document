@@ -3,7 +3,7 @@ import Joi from '@hapi/joi'
 import expressDocument from '../lib/'
 import Documenter from '../lib/documenter'
 import express from 'express'
-const { Router } = express
+import * as interfaces from '../lib/interfaces'
 const documenter = expressDocument()
 
 describe('documenter', () => {
@@ -17,14 +17,22 @@ describe('documenter', () => {
     })
     expect(insecureDocumenter.state.schemes).toEqual(['http'])
   })
+  test('can return the base path', () => {
+    const documenter = new Documenter()
+    expect(documenter.basePath()).toBe('/')
+    const apiDocumenter = new Documenter({
+      basePath: '/api/'
+    })
+    expect(apiDocumenter.basePath()).toBe('/api/')
+  })
 })
 
 describe('setup', () => {
   test('a document fn is added to router\'s future prototype', () => {
-    expect(express.Router.document).toBeInstanceOf(Function)
+    expect((express as any).Router.document).toBeInstanceOf(Function)
   })
   test('sends back a route to be used to serve the interface', async () => {
-    const router = new express.Router()
+    const router: interfaces.Router = new (express as any).Router()
     router.use(documenter.route())
   })
   const name = {
@@ -46,15 +54,15 @@ describe('setup', () => {
     expect(documenter.query('born')).toBe(born)
   })
   test('which allows it to be called on new routes', async () => {
-    const router = new express.Router()
+    const router: interfaces.Router = new (express as any).Router()
     router
-      .get('/a/path', (req, res, next) => next())
+      .get('/a/path', (req, res, next) => res.send('fin'))
       .document()
   })
   test('takes a whole host of inputs', async () => {
-    const router = new express.Router()
+    const router: interfaces.Router = new (express as any).Router()
     router
-      .get('/a/:name', (req, res, next) => next())
+      .get('/a/:name', (req, res, next) => res.send('fin'))
       .document({
         responses: {
           '200': {
@@ -65,28 +73,34 @@ describe('setup', () => {
       })
   })
   test('optional routes can be handled too', async () => {
-    const router = new express.Router()
+    const router: interfaces.Router = new (express as any).Router()
     router
       .get('/a/:name?', (req, res, next) => next())
-      .document({
-        responses: {
-          '200': {
-            description: 'takes a name',
-            schema: Joi.string().allow('', null)
-          }
-        }
+      .document()
+      .response(200, {
+        description: 'takes a name',
+        schema: Joi.string().allow('', null)
       })
+      .param('name', {})
   })
   test('a validation schema does not have to be provided', async () => {
-    const router = new express.Router()
+    const router: interfaces.Router = new (express as any).Router()
+    router
+      .get('/a/:name?', (req, res, next) => next())
+      .document()
+      .response(200, {
+        description: 'takes a name'
+      })
+  })
+  test('check responses already exists case', async () => {
+    const router: interfaces.Router = new (express as any).Router()
     router
       .get('/a/:name?', (req, res, next) => next())
       .document({
-        responses: {
-          '200': {
-            description: 'takes a name'
-          }
-        }
+        responses: {}
+      })
+      .response(200, {
+        description: 'takes a name'
       })
   })
 })
