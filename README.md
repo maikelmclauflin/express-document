@@ -21,8 +21,8 @@ app.listen(8080)
 import expressDocument from 'express-document'
 const basePath = '/api/'
 export default expressDocument({
-  options: {
-    basePath } })
+  basePath
+})
 ```
 
 ```js

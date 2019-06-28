@@ -28,6 +28,10 @@ describe('documenter', () => {
 })
 
 describe('setup', () => {
+  test('running twice produces the same documenter', () => {
+    const documenter2 = expressDocument()
+    expect(documenter).toBe(documenter2)
+  })
   test('a document fn is added to router\'s future prototype', () => {
     expect((express as any).Router.document).toBeInstanceOf(Function)
   })

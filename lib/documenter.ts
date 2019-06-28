@@ -29,14 +29,13 @@ class Documenter {
   query = input('query');
 
   constructor (
-    options: interfaces.DocumenterOptions = {},
-    inputs: interfaces.InputOptions = {
+    options: interfaces.DocumenterOptions = {}
+  ) {
+    const doc = this
+    doc.inputs = {
       param: {},
       query: {}
     }
-  ) {
-    const doc = this
-    doc.inputs = inputs
     doc.state = _.extend({
       swaggerOptions: {},
       schemes: options.secure ? ['https'] : ['http'],
@@ -63,7 +62,10 @@ class Documenter {
 
   document (): interfaces.DocumentHandler {
     const documenter = this
-    return function (options?: interfaces.Route): interfaces.RouteSetup {
+    document.documenter = documenter
+    return document
+
+    function document (options?: interfaces.Route): interfaces.RouteSetup {
       const router = this
       const {
         endpoint,

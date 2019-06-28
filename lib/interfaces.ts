@@ -84,6 +84,7 @@ export interface ResponseInput {
 
 export interface DocumentHandler {
   (options?: Route): RouteSetup;
+  documenter: any;
 }
 
 export interface Router extends express.Router {

@@ -11,9 +11,7 @@ const baseRouter: interfaces.Router = new (express as any).Router()
 
 const basePath = '/api/'
 const documenter = expressDocument({
-  options: {
-    basePath
-  }
+  basePath
 })
 
 documenter.param('firstname', () => ({
