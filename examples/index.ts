@@ -36,7 +36,7 @@ app.listen(port, (err) => {
   if (err) {
     console.log(`unable to listen on port: ${port}`)
   } else {
-    console.log(`listening on port: ${port}`)
+    console.log('open your browser to http://localhost:8080/documentation/')
   }
 })
 

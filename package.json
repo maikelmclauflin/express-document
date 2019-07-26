@@ -9,7 +9,7 @@
   },
   "scripts": {
     "prepublish": "npm run build",
-    "examples": "npm run build && node ./dist/examples",
+    "start": "npm run build && node ./dist/examples",
     "build": "tsc",
     "test": "npm run build && jest"
   },
