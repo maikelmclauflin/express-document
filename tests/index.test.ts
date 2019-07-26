@@ -28,7 +28,7 @@ describe('documenter', () => {
 })
 
 describe('setup', () => {
-  test('running twice produces the same documenter', () => {
+  test('running twice produces the same documenter (one per process)', () => {
     const documenter2 = expressDocument()
     expect(documenter).toBe(documenter2)
   })
