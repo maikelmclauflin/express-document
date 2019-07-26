@@ -1,28 +1,28 @@
-import expressDocument from '../lib/'
-import express from 'express'
-import swaggerUI from 'swagger-ui-express'
-import empty from './empty'
-import helloworld from './helloworld'
-import * as interfaces from '../lib/interfaces'
+import express from "express"
+import swaggerUI from "swagger-ui-express"
+import expressDocument from "../lib/"
+import * as interfaces from "../lib/interfaces"
+import empty from "./empty"
+import helloworld from "./helloworld"
 
 const app = express()
-const docPath = '/documentation/'
+const docPath = "/documentation/"
 const baseRouter: interfaces.Router = new (express as any).Router()
 
-const basePath = '/api/'
+const basePath = "/api/"
 const documenter = expressDocument({
-  basePath
+  basePath,
 })
 
-documenter.param('firstname', () => ({
-  in: 'path',
-  name: 'firstname',
+documenter.param("firstname", () => ({
+  in: "path",
+  name: "firstname",
   required: true,
   allowEmptyValue: false,
   schema: {
-    default: 'empty',
-    type: 'string'
-  }
+    default: "empty",
+    type: "string",
+  },
 }))
 
 setup(empty)
@@ -34,17 +34,17 @@ app.use(basePath, baseRouter)
 const port = 8080
 app.listen(port, (err) => {
   if (err) {
-    console.log(`unable to listen on port: ${port}`)
+    console.log(`unable to listen on port: ${port}`) // tslint:disable-line
   } else {
-    console.log('open your browser to http://localhost:8080/documentation/')
+    console.log("open your browser to http://localhost:8080/documentation/") // tslint:disable-line
   }
 })
 
-function setup (setupRoute) {
+function setup(setupRoute) {
   const router: interfaces.Router = new (express as any).Router()
   setupRoute({
     router,
-    documenter
+    documenter,
   })
   baseRouter.use(router)
 }

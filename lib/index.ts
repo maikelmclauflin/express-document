@@ -1,13 +1,13 @@
-import Documenter from './documenter'
-import swaggerUI from 'swagger-ui-express'
-import globalExpress from 'express'
-import * as interfaces from './interfaces'
+import globalExpress from "express"
+import swaggerUI from "swagger-ui-express"
+import Documenter from "./documenter"
+import * as interfaces from "./interfaces"
 
 export default expressDocumentRoute
 
 function expressDocumentRoute(
   options: interfaces.DocumenterOptions = {},
-  express = globalExpress
+  express = globalExpress,
 ) {
   const Router: any = express.Router
   const document: interfaces.DocumentHandler | null = Router.document

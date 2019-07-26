@@ -7,93 +7,93 @@ export {
   makeWrappedProperties,
 }
 
-function currencyParam (name, defaultValue) {
+function currencyParam(name, defaultValue) {
   return {
-    in: 'path',
+    in: "path",
     name,
     required: true,
     allowEmptyValue: false,
     schema: {
       default: defaultValue,
-      type: 'string'
-    }
+      type: "string",
+    },
   }
 }
 
-function listQuery (name) {
+function listQuery(name) {
   return {
     name,
-    in: 'query',
+    in: "query",
     required: false,
     allowEmptyValue: true,
-    type: 'array',
+    type: "array",
     items: {
-      type: 'string'
-    }
+      type: "string",
+    },
   }
 }
 
-function dateParam (name, extension = {}) {
+function dateParam(name, extension = {}) {
   return Object.assign({
     name,
-    in: 'path',
+    in: "path",
     required: true,
     allowEmptyValue: true,
     schema: {
       oneOf: [{
-        type: 'string',
-        format: 'date'
+        type: "string",
+        format: "date",
       }, {
-        type: 'integer'
-      }]
-    }
+        type: "integer",
+      }],
+    },
   }, extension)
 }
 
-function groupParam ({
+function groupParam({
   name,
   defaultValue,
-  list
+  list,
 }) {
   const schema = {
     default: defaultValue,
-    type: 'string',
-    enum: []
+    type: "string",
+    enum: [],
   }
   if (list) {
     schema.enum = list
   }
   return {
     name,
-    in: 'path',
+    in: "path",
     required: true,
     allowEmptyValue: false,
-    schema
+    schema,
   }
 }
 
-function bearerAuth () {
+function bearerAuth() {
   return {
-    in: 'header',
-    name: 'Authorization',
+    in: "header",
+    name: "Authorization",
     required: true,
-    description: 'An Authorization Header',
-    default: 'Bearer foobarfoobar',
-    type: 'string'
+    description: "An Authorization Header",
+    default: "Bearer foobarfoobar",
+    type: "string",
   }
 }
 
-function makeWrappedProperties (appendage) {
-  const responseProperties = ['lastUpdated', 'payload'];
+function makeWrappedProperties(appendage) {
+  const responseProperties = ["lastUpdated", "payload"]
   return {
-    type: 'object',
+    type: "object",
     required: responseProperties,
     properties: {
       value: appendage,
       lastUpdated: {
-        type: 'string',
-        format: 'date-time'
-      }
-    }
+        type: "string",
+        format: "date-time",
+      },
+    },
   }
 }

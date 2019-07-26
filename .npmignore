@@ -1,6 +1,7 @@
 lib/
 examples/
 tests/
+coverage/
 nodemon.json
 jest.config.js
 tsconfig.json
