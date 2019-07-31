@@ -142,7 +142,7 @@ class Documenter {
             fn(routeStack)
           } else {
             for (const parent of parents) {
-              recurse([parents[i]].concat(routeStack), fn)
+              recurse([parent].concat(routeStack), fn)
             }
           }
         }
