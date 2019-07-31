@@ -85,9 +85,7 @@ export interface DocumentHandler {
   documenter: any
 }
 
-export interface ParentOfHandler {
-  (routes: Router[]): void
-}
+export type ParentOfHandler = (routes: Router[]) => void
 
 export interface Layer {
   route?: Router

@@ -1,10 +1,10 @@
-import joiToJSONSchema from 'joi-to-json-schema'
 import { METHODS } from 'http'
+import joiToJSONSchema from 'joi-to-json-schema'
 import _ from 'lodash'
+import { join } from 'path'
 import swaggerUI from 'swagger-ui-express'
 import * as defaults from './defaults'
 import * as interfaces from './interfaces'
-import { join } from 'path'
 
 const responseProperties = ['lastUpdated', 'payload']
 const input = (inputKey) => function(key: string, option?: object | (() => void)) {
@@ -97,14 +97,14 @@ class Documenter {
       Router[key] = make(Router[key])
 
       function make(fn: (() => void)) {
-        return function (path) {
+        return function(path) {
           const docPathEnabled = method === 'use' && typeof path === 'string'
           searchForRouters([].slice.apply(arguments), (route) => {
-            let { parents = [] } = route
+            const { parents = [] } = route
             if (!parents.includes(this)) {
               parents.push({
                 path: docPathEnabled ? path : '/',
-                target: this
+                target: this,
               })
             }
             route.parents = parents
@@ -114,9 +114,8 @@ class Documenter {
       }
     })
 
-    function searchForRouters (many: any[], fn: ((router) => void)) {
-      for (let i = 0; i < many.length; i += 1) {
-        const item = many[i]
+    function searchForRouters(many: any[], fn: ((router) => void)) {
+      for (const item of many) {
         if (Array.isArray(item)) {
           searchForRouters(item, fn)
         } else {
@@ -136,13 +135,13 @@ class Documenter {
       documenter.inputs.routes.push(() => {
         recurse([router], routeStack)
 
-        function recurse (routeStack, fn) {
+        function recurse(routeStack, fn) {
           const topRoute = routeStack[0]
           const { parents } = topRoute
           if (!parents) {
             fn(routeStack)
           } else {
-            for (var i = 0; i < parents.length; i += 1) {
+            for (const parent of parents) {
               recurse([parents[i]].concat(routeStack), fn)
             }
           }
@@ -155,15 +154,14 @@ class Documenter {
         response,
       }
 
-      function routeStack (routes) {
+      function routeStack(routes) {
         const {
           endpoint,
           methods,
         } = parseStack(routes)
-        for (var i = 0; i < methods.length; i += 1) {
-          const method = methods[i]
+        for (const method of methods) {
           const {
-            endpoint: point = endpoint
+            endpoint: point = endpoint,
           } = options
           const {
             state,
@@ -226,17 +224,17 @@ function parseStack(routeStack) {
     return parseRoute(memo, first.route || first)
   }, {
     methods: [],
-    endpoint: ''
+    endpoint: '',
   })
 }
 
-function parseRoute (memo, pathway) {
+function parseRoute(memo, pathway) {
   const { methods, endpoint } = memo
   const { path, stack } = pathway
   let method = null
   if (stack && stack.length) {
     const handler = stack[0]
-    ;({ method } = handler)
+    method = handler.method
   }
   const step = parsePathParams(path)
   return {

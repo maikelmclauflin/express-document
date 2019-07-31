@@ -10,6 +10,7 @@
   "scripts": {
     "lint": "tslint --fix -c tslint.json '{lib,examples,tests}/**/*.ts'",
     "prepublish": "npm run build",
+    "precommit": "npm run build",
     "start": "npm run make && node ./dist/examples",
     "build": "npm run lint && npm run make",
     "make": "tsc",
