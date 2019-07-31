@@ -10,12 +10,12 @@
   "scripts": {
     "lint": "tslint --fix -c tslint.json '{lib,examples,tests}/**/*.ts'",
     "prepublish": "npm run build",
-    "precommit": "npm run build",
     "start": "npm run make && node ./dist/examples",
     "build": "npm run lint && npm run make",
     "make": "tsc",
     "test": "npm run build && jest"
   },
+  "precommit": ["build"],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/maikelmclauflin/express-document.git"
@@ -50,6 +50,7 @@
   "dependencies": {
     "express": "^4.17.1",
     "joi-to-json-schema": "^5.1.0",
+    "pre-commit": "^1.2.2",
     "swagger-ui-express": "^4.0.7"
   }
 }
