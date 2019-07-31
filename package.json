@@ -1,6 +1,6 @@
 {
   "name": "express-document",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A route documenter",
   "main": "dist/lib/index.d.ts",
   "typings": "js/index",
@@ -15,7 +15,9 @@
     "make": "tsc",
     "test": "npm run build && jest"
   },
-  "precommit": ["build"],
+  "precommit": [
+    "build"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/maikelmclauflin/express-document.git"
