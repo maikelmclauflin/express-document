@@ -10,8 +10,9 @@
   "scripts": {
     "lint": "tslint --fix -c tslint.json '{lib,examples,tests}/**/*.ts'",
     "prepublish": "npm run build",
-    "start": "npm run build && node ./dist/examples",
-    "build": "npm run lint && tsc",
+    "start": "npm run make && node ./dist/examples",
+    "build": "npm run lint && npm run make",
+    "make": "tsc",
     "test": "npm run build && jest"
   },
   "repository": {
@@ -40,13 +41,13 @@
     "@types/jest": "^24.0.15",
     "@types/node": "^12.6.8",
     "babel-jest": "^24.8.0",
-    "express": "^4.17.1",
     "jest": "^24.8.0",
     "ts-jest": "^24.0.2",
     "tslint": "^5.18.0",
     "typescript": "^3.5.3"
   },
   "dependencies": {
+    "express": "^4.17.1",
     "joi-to-json-schema": "^5.1.0",
     "swagger-ui-express": "^4.0.7"
   }

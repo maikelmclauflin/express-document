@@ -1,4 +1,4 @@
-import * as express from "express"
+import * as express from 'express'
 
 export interface DocInfo {
   description: string
@@ -36,6 +36,7 @@ export interface Route {
   description?: string
   parameters?: object[]
   responses?: Responses
+  endpoint?: string
 }
 
 export interface RouteCache {
@@ -59,6 +60,7 @@ export interface ParamHash {
 }
 
 export interface InputOptions {
+  routes: Array<() => void>,
   param?: {
     [key: string]: () => void,
   }
@@ -83,14 +85,22 @@ export interface DocumentHandler {
   documenter: any
 }
 
+export interface ParentOfHandler {
+  (routes: Router[]): void
+}
+
+export interface Layer {
+  route?: Router
+}
+
 export interface Router extends express.Router {
   document: DocumentHandler
+  parent?: Router
+  stack: Layer[]
 }
 
 export interface RouteSetup {
-  route: Route
   router: Router
-  // documenter: object
   param: RouteInput
   query: RouteInput
   response: ResponseInput

@@ -9,6 +9,7 @@
       "no-shadowed-variable": [false],
       "interface-name": [false],
       "max-line-length": [false],
+      "quotemark": [true, "single"],
       "object-literal-sort-keys": ["ignore-case", "shorthand-first"]
     },
     "rulesDirectory": []
