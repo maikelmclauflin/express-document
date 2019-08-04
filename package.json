@@ -22,7 +22,7 @@
     "type": "git",
     "url": "git+https://github.com/maikelmclauflin/express-document.git"
   },
-  "keywords": [],
+  "keywords": ["express", "documentation", "swagger"],
   "author": {
     "name": "Michael McLaughlin",
     "email": "michael.j.mclaughlin20@gmail.com"
