@@ -18,15 +18,20 @@ export default ({
       const { firstname, status } = req.params
       res.status(+status).send(`Hello ${firstname}!`)
     })
-    .document({
-      summary: 'Get a hello from the server',
-      description: 'It is important that your api knows you by name. This endpoint ensures that you know that your server knows your name.',
-    })
-    .param(documenter.param('status'))
-    .param(documenter.param('firstname'))
-    .response(200, {
-      schema: joiStatus200,
-    })
+    .document((endpoint) => endpoint
+      .set({
+        summary: 'Get a hello from the server',
+        description: 'It is important that your api knows you by name. This endpoint ensures that you know that your server knows your name.',
+      })
+      .param(documenter.param('status'))
+      .param(documenter.param('firstname'))
+      .response(200, {
+        schema: joiStatus200,
+      })
+      .response(422, {
+        schema: joiStatus422,
+      }),
+    )
   const parentRouter = express.Router()
   parentRouter.use('/echo/:status/', subRouter)
   router.use(parentRouter)

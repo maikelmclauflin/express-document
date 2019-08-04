@@ -36,7 +36,7 @@
     "url": "https://github.com/maikelmclauflin/express-document/issues"
   },
   "homepage": "https://github.com/maikelmclauflin/express-document#readme",
-  "peerDependency": {
+  "peerDependencies": {
     "express": "^4.17.1"
   },
   "devDependencies": {

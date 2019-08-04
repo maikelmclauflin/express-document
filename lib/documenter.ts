@@ -6,6 +6,7 @@ import {
   isString,
   mapValues,
   merge,
+  noop,
 } from 'lodash'
 import { join } from 'path'
 import swaggerUI from 'swagger-ui-express'
@@ -66,13 +67,12 @@ export default class Documenter {
     this.inputs.routes.forEach((setup) => setup())
   }
 
-  public document(express: any): void {
-    const documenter = this
-    document.documenter = documenter
-    const { Router, Route } = express
-    Router.document = document
-    Route.prototype.document = document
-    METHODS.concat(['all', 'use']).forEach((method) => {
+  public wrapExpressMethods(list: string[], express) {
+    const {
+      Router,
+      Route,
+    } = express
+    list.forEach((method) => {
       const key = method.toLowerCase()
       Route.prototype[key] = make(Route.prototype[key])
       Router[key] = make(Router[key])
@@ -109,8 +109,19 @@ export default class Documenter {
         }
       }
     }
+  }
 
-    function document(options: interfaces.Route = {}): interfaces.RouteSetup {
+  public document(express: any): void {
+    const documenter = this
+    document.documenter = documenter
+    const { Router, Route } = express
+    const shouldDocument = true
+    const documentMethod = shouldDocument ? document : noop
+    Router.document = document
+    Route.prototype.document = document
+    this.wrapExpressMethods(METHODS.concat(['all', 'use']), express)
+
+    function document(runner: ((a: interfaces.Documentable) => any) = noop): interfaces.Router {
       const router = this
       const todo = []
       documenter.inputs.routes.push(() => {
@@ -128,11 +139,19 @@ export default class Documenter {
           }
         }
       })
-      return {
+      const options: interfaces.Route = {}
+      runner({
         router,
         param: input('param'),
         query: input('query'),
         response,
+        set,
+      })
+      return router
+
+      function set(opts) {
+        extend(options, opts)
+        return this
       }
 
       function routeStack(routes): void {
@@ -154,7 +173,7 @@ export default class Documenter {
             [point]: path = {},
           } = paths
           paths[point] = path
-          const route = baseRoute(options || {})
+          const route = baseRoute(options)
           path[method] = route
           todo.forEach((fn) => fn(route))
         }

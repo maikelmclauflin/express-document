@@ -6,6 +6,7 @@ import * as interfaces from './interfaces'
 expressDocumentRoute.Documenter = Documenter
 
 export default expressDocumentRoute
+export * from './interfaces'
 
 function expressDocumentRoute(
   options: interfaces.DocumenterOptions = {},

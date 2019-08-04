@@ -76,12 +76,14 @@ export interface ModuleOptions {
   inputs?: InputOptions
 }
 
-export type RouteInput = (key: string, target: object | (() => void)) => RouteSetup
+export type RouteInput = (key: string, target: object | (() => void)) => Documentable
 
-export type ResponseInput = (key: number | string, target: object | (() => void)) => RouteSetup
+export type ResponseInput = (key: number | string, target: object | (() => void)) => Documentable
+
+export type RouteSet = (state: object) => Documentable
 
 export interface DocumentHandler {
-  (options?: Route): RouteSetup
+  (options?: Route): Documentable
   documenter: any
 }
 
@@ -93,13 +95,14 @@ export interface Layer {
 
 export interface Router extends express.Router {
   document: DocumentHandler
-  parent?: Router
+  parents?: Router[]
   stack: Layer[]
 }
 
-export interface RouteSetup {
+export interface Documentable {
   router: Router
   param: RouteInput
   query: RouteInput
   response: ResponseInput
+  set: RouteSet
 }
