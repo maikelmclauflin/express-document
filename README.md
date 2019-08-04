@@ -6,7 +6,7 @@ document your express routes quickly and completely with a swagger implementatio
 // server.js
 import express from 'express'
 import swaggerUI from 'swagger-ui-express'
-// must run before apis
+// must run before documenter.route()
 import documenter from './documenter'
 import apiRouter from './routes'
 
@@ -19,13 +19,18 @@ app.use('/documentation/', swaggerUI.serve, documenter.route())
 app.use(basePath, apiRouter)
 app.listen(8080)
 ```
+
+a documenter needs any params to be referrenced on routes to be set on the documenter itself
 ```js
+// documenter.js
 import expressDocumenter from 'express-document'
 const documenter = expressDocumenter()
-documenter.param('name', () => ({
+documenter.param('name', ({
+  required = true,
+}) => ({
   in: 'path',
   name: 'name',
-  required: false,
+  required,
   allowEmptyValue: false,
   schema: {
     type: 'string',
@@ -43,6 +48,8 @@ documenter.param('status', () => ({
 }))
 export default documenter
 ```
+
+routes' `.use(` method helps define how to structure the full path of a single route
 ```js
 // routes.js
 import express from 'express'
@@ -56,6 +63,7 @@ router
   .use('/reply/:status', subRouter)
 ```
 
+subroutes will be available and show up correctly (in this case `/reply/{status}/hello/{name?}`), even though, in the subrouter module, you do not have the full path.
 ```js
 // subroutes.js
 import express from 'express'
@@ -66,14 +74,17 @@ export default subRouter
 subRouter.get('/hello/:name?', (req, res, next) => {
   const {
     name = 'user',
-    status
+    status // comes from parent route
   } = req.params
   const response = `Hello ${name}.`
   res.status(status).send(response)
 })
   .document()
+  // these params match the keys in documenter.js
   .param('status')
-  .param(documenter.param('name'))
+  .param(documenter.param('name', {
+    required: false,
+  }))
   .response(200, {
     schema: Joi.string()
   })
