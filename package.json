@@ -55,6 +55,7 @@
   },
   "dependencies": {
     "joi-to-json-schema": "^5.1.0",
+    "lodash": "^4.17.15",
     "pre-commit": "^1.2.2",
     "swagger-ui-express": "^4.0.7"
   }
