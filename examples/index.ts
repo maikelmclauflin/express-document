@@ -1,5 +1,4 @@
 import express from 'express'
-import swaggerUI from 'swagger-ui-express'
 import expressDocument from '../lib/'
 import * as interfaces from '../lib/interfaces'
 import empty from './empty'
@@ -40,7 +39,7 @@ documenter.param('status', () => ({
 setup(empty)
 setup(helloworld)
 setup(leveled)
-app.use(docPath, swaggerUI.serve, documenter.route([baseRouter]))
+app.use(docPath, documenter.route())
 app.use(basePath, baseRouter)
 
 const port = 8080

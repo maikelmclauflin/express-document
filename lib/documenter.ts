@@ -45,9 +45,9 @@ export default class Documenter {
     }))
   }
 
-  public route(routers: interfaces.Router[]): (() => void) {
+  public route(routers: interfaces.Router[]): (() => void)[] {
     this.setup(routers)
-    return swaggerUI.setup(this, this.state.swaggerOptions)
+    return [swaggerUI.serve, swaggerUI.setup(this, this.state.swaggerOptions)]
   }
 
   public toJSON() {
@@ -170,9 +170,9 @@ export default class Documenter {
       }
 
       function input(key: string) {
-        return (fn: string | (() => void)) => {
+        return function (fn: string | (() => void)) {
           if (isString(fn)) {
-            input(documenter[key](fn))
+            input('')(documenter[key](fn))
           } else {
             todo.push((route) => {
               route.parameters.push(fn)

@@ -2,11 +2,26 @@
 
 document your express routes quickly and completely with a swagger implementation directly in your route
 
+to help develop the project
+```bash
+npm install
+npm test
+```
+
+don't forget your peer dependency
+```bash
+npm i -s express-document express
+```
+
+### API
+todo
+
+### Example
+
+check out the examples folder for more setup examples
 ```js
 // server.js
 import express from 'express'
-import swaggerUI from 'swagger-ui-express'
-// must run before documenter.route()
 import documenter from './documenter'
 import apiRouter from './routes'
 
@@ -15,12 +30,13 @@ documenter.set({
   basePath,
 })
 const app = express()
-app.use('/documentation/', swaggerUI.serve, documenter.route())
+// setup everything before documenter.route()
+app.use('/documentation/', documenter.route())
 app.use(basePath, apiRouter)
 app.listen(8080)
 ```
 
-a documenter needs any params to be referrenced on routes to be set on the documenter itself
+a documenter needs any params to be referenced on routes to be set on the documenter itself. The example at the bottom of the Path Item Object section of the swagger OAS 3 is a good reference: https://swagger.io/specification/#pathItemObject
 ```js
 // documenter.js
 import expressDocumenter from 'express-document'
@@ -49,7 +65,7 @@ documenter.param('status', () => ({
 export default documenter
 ```
 
-routes' `.use(` method helps define how to structure the full path of a single route
+routers' `.use(` method helps define how to structure the full path of a single route
 ```js
 // routes.js
 import express from 'express'
