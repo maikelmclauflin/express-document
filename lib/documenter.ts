@@ -189,7 +189,7 @@ export default class Documenter {
       }
 
       function input(key: string) {
-        return function(fn: string | (() => void)) {
+        return function(fn: string | object, ...args) {
           if (isString(fn)) {
             input('')(documenter[key](fn))
           } else {
