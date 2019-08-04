@@ -1,6 +1,6 @@
 {
   "name": "express-document",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "A route documenter",
   "main": "dist/lib/index.d.ts",
   "typings": "js/index",
