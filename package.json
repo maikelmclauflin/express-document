@@ -1,6 +1,6 @@
 {
   "name": "express-document",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "A route documenter",
   "main": "dist/lib/index.d.ts",
   "typings": "js/index",
@@ -22,7 +22,11 @@
     "type": "git",
     "url": "git+https://github.com/maikelmclauflin/express-document.git"
   },
-  "keywords": ["express", "documentation", "swagger"],
+  "keywords": [
+    "express",
+    "documentation",
+    "swagger"
+  ],
   "author": {
     "name": "Michael McLaughlin",
     "email": "michael.j.mclaughlin20@gmail.com"
