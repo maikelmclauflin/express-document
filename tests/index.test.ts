@@ -10,19 +10,19 @@ describe('documenter', () => {
   test('can be created to respect https or not', () => {
     const secureDocumenter = new Documenter({
       secure: true,
-    })
+    }, express)
     expect(secureDocumenter.state.schemes).toEqual(['https'])
     const insecureDocumenter = new Documenter({
       secure: false,
-    })
+    }, express)
     expect(insecureDocumenter.state.schemes).toEqual(['http'])
   })
   test('can return the base path', () => {
-    const documenter = new Documenter()
+    const documenter = new Documenter({}, express)
     expect(documenter.basePath()).toBe('/')
     const apiDocumenter = new Documenter({
       basePath: '/api/',
-    })
+    }, express)
     expect(apiDocumenter.basePath()).toBe('/api/')
   })
 })

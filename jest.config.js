@@ -15,7 +15,6 @@ module.exports = {
     '^.+\\.(ts|tsx)$': 'ts-jest'
   },
   testEnvironment: 'node',
-  setupFiles: ['<rootDir>/tests/setup.js'],
   verbose: true,
   collectCoverage: true,
   moduleFileExtensions: [...defaults.moduleFileExtensions, 'ts', 'tsx'],

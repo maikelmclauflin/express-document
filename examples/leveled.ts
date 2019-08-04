@@ -19,7 +19,6 @@ export default ({
       res.status(+status).send(`Hello ${firstname}!`)
     })
     .document({
-      endpoint: '/echo/{status}/reply/{firstname}',
       summary: 'Get a hello from the server',
       description: 'It is important that your api knows you by name. This endpoint ensures that you know that your server knows your name.',
     })

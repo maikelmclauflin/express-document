@@ -1,29 +1,22 @@
 import { METHODS } from 'http'
 import joiToJSONSchema from 'joi-to-json-schema'
-import _ from 'lodash'
+import {
+  cloneDeep,
+  extend,
+  isString,
+  mapValues,
+  merge,
+} from 'lodash'
 import { join } from 'path'
 import swaggerUI from 'swagger-ui-express'
 import * as defaults from './defaults'
 import * as interfaces from './interfaces'
 
 const responseProperties = ['lastUpdated', 'payload']
-const input = (inputKey) => function(key: string, option?: object | (() => void)) {
-  const { [inputKey]: param } = this.inputs
-  if (typeof option === 'function') {
-    param[key] = option
-    return this
-  }
-  const handler = param[key]
-  if (!handler) {
-    throw new Error(`param ${key} not defined`)
-  }
-  return handler(option)
-}
-
 const param = input('param')
 const query = input('query')
 
-class Documenter {
+export default class Documenter {
   public static baseRoute
   public state: interfaces.FullState
   public inputs: interfaces.InputOptions
@@ -32,6 +25,7 @@ class Documenter {
 
   constructor(
     options: interfaces.DocumenterOptions = {},
+    express,
   ) {
     const doc = this
     doc.inputs = {
@@ -39,7 +33,7 @@ class Documenter {
       param: {},
       query: {},
     }
-    doc.state = _.extend({
+    doc.state = cloneDeep(extend({
       swaggerOptions: {},
       schemes: options.secure ? ['https'] : ['http'],
       basePath: '/',
@@ -48,10 +42,10 @@ class Documenter {
     }, options, {
       swagger: '2.0.0',
       paths: {},
-    })
+    }))
   }
 
-  public route(routers: interfaces.Router[]) {
+  public route(routers: interfaces.Router[]): (() => void) {
     this.setup(routers)
     return swaggerUI.setup(this, this.state.swaggerOptions)
   }
@@ -60,29 +54,16 @@ class Documenter {
     return this.state
   }
 
-  public basePath() {
+  public set(hash: object): void {
+    merge(this.state, cloneDeep(hash))
+  }
+
+  public basePath(): string {
     return this.state.basePath
   }
 
   public setup(routers: interfaces.Router[]) {
-    // routers.forEach((router) => {
-    //   recurseRoute(router, (route) => {
-    //     console.log(route)
-    //   })
-    // })
     this.inputs.routes.forEach((setup) => setup())
-
-    // function recurseRoute (router, fn) {
-    //   console.log(router)
-    //   router.stack.forEach((layer) => {
-    //     const { name } = layer
-    //     if (name === 'router') {
-    //       layer.route.stack.forEach(fn)
-    //     } else {
-    //       console.log(name, layer)
-    //     }
-    //   })
-    // }
   }
 
   public document(express: any): void {
@@ -149,12 +130,12 @@ class Documenter {
       })
       return {
         router,
-        param: input,
-        query: input,
+        param: input('param'),
+        query: input('query'),
         response,
       }
 
-      function routeStack(routes) {
+      function routeStack(routes): void {
         const {
           endpoint,
           methods,
@@ -188,17 +169,21 @@ class Documenter {
         return this
       }
 
-      function input(fn) {
-        todo.push((route) => {
-          route.parameters.push(fn)
-        })
-        return this
+      function input(key: string) {
+        return (fn: string | (() => void)) => {
+          if (isString(fn)) {
+            input(documenter[key](fn))
+          } else {
+            todo.push((route) => {
+              route.parameters.push(fn)
+            })
+          }
+          return this
+        }
       }
     }
   }
 }
-
-export default Documenter
 
 function parsePathParams(path) {
   const split = path.split('/')
@@ -243,6 +228,21 @@ function parseRoute(memo, pathway) {
   }
 }
 
+function input(inputKey) {
+  return function(key: string, option?: object | (() => void)) {
+    const { [inputKey]: param } = this.inputs
+    if (typeof option === 'function') {
+      param[key] = option
+      return this
+    }
+    const handler = param[key]
+    if (!handler) {
+      throw new Error(`param ${key} not defined`)
+    }
+    return handler(option)
+  }
+}
+
 function baseRoute({
   tags = ['examples'],
   summary = 'example summary',
@@ -255,7 +255,7 @@ function baseRoute({
     summary,
     description,
     parameters: [].concat(parameters),
-    responses: _.mapValues(responses, normalizeResponse),
+    responses: mapValues(responses, normalizeResponse),
   }
 }
 
