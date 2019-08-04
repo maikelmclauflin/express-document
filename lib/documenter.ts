@@ -45,7 +45,7 @@ export default class Documenter {
     }))
   }
 
-  public route(routers: interfaces.Router[]): (() => void)[] {
+  public route(routers: interfaces.Router[]): Array<() => void> {
     this.setup(routers)
     return [swaggerUI.serve, swaggerUI.setup(this, this.state.swaggerOptions)]
   }
@@ -170,7 +170,7 @@ export default class Documenter {
       }
 
       function input(key: string) {
-        return function (fn: string | (() => void)) {
+        return function(fn: string | (() => void)) {
           if (isString(fn)) {
             input('')(documenter[key](fn))
           } else {

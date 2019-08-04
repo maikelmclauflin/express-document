@@ -2,8 +2,8 @@
   "name": "express-document",
   "version": "1.0.7",
   "description": "A route documenter",
-  "main": "dist/lib/index.d.ts",
-  "typings": "js/index",
+  "main": "dist/lib/index.js",
+  "types": "dist/lib/index.d.ts",
   "directories": {
     "lib": "lib"
   },
@@ -54,7 +54,6 @@
     "typescript": "^3.5.3"
   },
   "dependencies": {
-    "express": "^4.17.1",
     "joi-to-json-schema": "^5.1.0",
     "pre-commit": "^1.2.2",
     "swagger-ui-express": "^4.0.7"
