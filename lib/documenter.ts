@@ -19,36 +19,26 @@ const query = input('query')
 
 export default class Documenter {
   public static baseRoute
+  public options: interfaces.DocumenterOptions
   public state: interfaces.FullState
   public inputs: interfaces.InputOptions
   public param = input('param')
   public query = input('query')
 
   constructor(
-    options: interfaces.DocumenterOptions = {},
+    options: interfaces.DocumenterOptions,
     express,
   ) {
     const doc = this
-    doc.inputs = {
-      routes: [],
-      param: {},
-      query: {},
-    }
-    doc.state = cloneDeep(extend({
-      swaggerOptions: {},
-      schemes: options.secure ? ['https'] : ['http'],
-      basePath: '/',
-      info: defaults.info,
-      tags: defaults.tags,
-    }, options, {
-      swagger: '2.0.0',
-      paths: {},
-    }))
+    doc.options = options
+    doc.reset()
   }
 
-  public route(routers: interfaces.Router[]): Array<() => void> {
-    this.setup(routers)
-    return [swaggerUI.serve, swaggerUI.setup(this, this.state.swaggerOptions)]
+  public route(setups?: Array<() => void>): interfaces.Router[] {
+    const routes = setups || this.inputs.routes
+    routes.forEach((setup) => setup())
+    const swaggerRoute = swaggerUI.setup(this, this.state.swaggerOptions)
+    return [swaggerUI.serve, swaggerRoute]
   }
 
   public toJSON() {
@@ -63,10 +53,6 @@ export default class Documenter {
     return this.state.basePath
   }
 
-  public setup(routers: interfaces.Router[]) {
-    this.inputs.routes.forEach((setup) => setup())
-  }
-
   public wrapExpressMethods(list: string[], express) {
     const {
       Router,
@@ -77,17 +63,15 @@ export default class Documenter {
       Route.prototype[key] = make(Route.prototype[key])
       Router[key] = make(Router[key])
 
-      function make(fn: (() => void)) {
+      function make(fn: (() => any)) {
         return function(path) {
           const docPathEnabled = method === 'use' && typeof path === 'string'
           searchForRouters([].slice.apply(arguments), (route) => {
             const { parents = [] } = route
-            if (!parents.includes(this)) {
-              parents.push({
-                path: docPathEnabled ? path : '/',
-                target: this,
-              })
-            }
+            parents.push({
+              path: docPathEnabled ? path : '/',
+              target: this,
+            })
             route.parents = parents
           })
           return fn.apply(this, arguments)
@@ -111,15 +95,46 @@ export default class Documenter {
     }
   }
 
+  public reset(opts: interfaces.DocumenterOptions = this.options) {
+    const doc = this
+    const options = cloneDeep(opts)
+    const {
+      secure,
+    } = options
+    const {
+      info,
+      tags,
+    } = defaults
+    doc.inputs = {
+      routes: [],
+      param: {},
+      query: {},
+    }
+    doc.state = extend({
+      disabled: false,
+      swaggerOptions: {},
+      schemes: secure ? ['https'] : ['http'],
+      basePath: '/',
+      info,
+      tags,
+    }, options, {
+      swagger: '2.0.0',
+      paths: {},
+    })
+  }
+
   public document(express: any): void {
     const documenter = this
     document.documenter = documenter
     const { Router, Route } = express
     const shouldDocument = true
-    const documentMethod = shouldDocument ? document : noop
-    Router.document = document
-    Route.prototype.document = document
-    this.wrapExpressMethods(METHODS.concat(['all', 'use']), express)
+    const documentMethod = documenter.state.disabled ? function() {
+      return this
+    } : document
+    Router.document = documentMethod
+    Route.prototype.document = documentMethod
+    const methods = METHODS.concat(['all', 'use'])
+    documenter.wrapExpressMethods(methods, express)
 
     function document(runner: ((a: interfaces.Documentable) => any) = noop): interfaces.Router {
       const router = this
@@ -127,14 +142,14 @@ export default class Documenter {
       documenter.inputs.routes.push(() => {
         recurse([router], routeStack)
 
-        function recurse(routeStack, fn) {
-          const topRoute = routeStack[0]
+        function recurse(stack, fn) {
+          const topRoute = stack[0] // take the first one otherwise infinite loop
           const { parents } = topRoute
           if (!parents) {
-            fn(routeStack)
+            fn(stack)
           } else {
             for (const parent of parents) {
-              recurse([parent].concat(routeStack), fn)
+              recurse([parent].concat(stack), fn)
             }
           }
         }
@@ -224,8 +239,8 @@ function parseStack(routeStack) {
     if (pathway.path) {
       return parseRoute(memo, pathway)
     }
-    const first = stack[0]
-    return parseRoute(memo, first.route || first)
+    const last = stack[stack.length - 1]
+    return parseRoute(memo, last.route)
   }, {
     methods: [],
     endpoint: '',
@@ -243,7 +258,7 @@ function parseRoute(memo, pathway) {
   const step = parsePathParams(path)
   return {
     methods: methods.concat(method || []),
-    endpoint: join(endpoint, step || ''),
+    endpoint: join(endpoint, step),
   }
 }
 
@@ -278,10 +293,12 @@ function baseRoute({
   }
 }
 
-function normalizeResponse(item) {
-  return Object.assign({
+function normalizeResponse(item: interfaces.Response = {}) {
+  const defaults = {
     description: 'an example route response description',
-  }, item, item.schema ? {
+  }
+  const overwrites = item.schema ? {
     schema: joiToJSONSchema(item.schema),
-  } : {})
+  } : {}
+  return extend(defaults, item, overwrites)
 }

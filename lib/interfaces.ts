@@ -15,6 +15,7 @@ export interface Tag {
 }
 
 export interface DocumenterOptions {
+  disabled?: boolean
   secure?: boolean
   basePath?: string
   info?: DocInfo
@@ -46,6 +47,7 @@ export interface RouteCache {
 }
 
 export interface FullState {
+  disabled: boolean
   swaggerOptions: object
   schemes: string[]
   swagger: string
