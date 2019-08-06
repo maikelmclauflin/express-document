@@ -10,5 +10,3 @@ before_install:
   - npm --version
 install:
   - npm ci
-  - npm i -g npm-install-peers
-  - npm-install-peers
