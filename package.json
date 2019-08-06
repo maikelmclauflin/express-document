@@ -36,9 +36,6 @@
     "url": "https://github.com/maikelmclauflin/express-document/issues"
   },
   "homepage": "https://github.com/maikelmclauflin/express-document#readme",
-  "peerDependencies": {
-    "express": "^4.17.1"
-  },
   "devDependencies": {
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-react": "^7.0.0",
@@ -54,6 +51,7 @@
     "typescript": "^3.5.3"
   },
   "dependencies": {
+    "express": "^4.17.1",
     "joi-to-json-schema": "^5.1.0",
     "lodash": "^4.17.15",
     "pre-commit": "^1.2.2",
